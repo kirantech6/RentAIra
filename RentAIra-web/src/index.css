@@ -1,0 +1,38 @@
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-white antialiased;
+    color: #1F2933;
+    font-family: 'Satoshi', 'Inter', sans-serif;
+    line-height: 1.6;
+    font-size: 16px;
+  }
+
+  h1 {
+    @apply font-bold leading-tight;
+    color: #1F2933;
+    font-size: 64px;
+  }
+
+  h2 {
+    @apply font-bold leading-tight;
+    color: #1F2933;
+    font-size: 40px;
+  }
+
+  h3 {
+    @apply font-bold leading-tight;
+    color: #1F2933;
+    font-size: 28px;
+  }
+
+  p {
+    line-height: 1.75;
+    @apply mb-4;
+  }
+}
