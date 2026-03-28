@@ -64,14 +64,23 @@ const Navbar = () => {
                     <div className="hidden md:flex items-center space-x-8">
                         {user ? (
                             <div className="flex items-center space-x-4">
-                                <Link to="/dashboard" className="text-charcoal hover:text-primary text-[15px] font-medium transition-colors">
+                                <Link
+                                    to={user.role === 'landlord' ? '/landlord/dashboard' : '/tenant/dashboard'}
+                                    className="text-charcoal hover:text-primary text-[15px] font-medium transition-colors"
+                                >
                                     Dashboard
+                                </Link>
+                                <Link
+                                    to={user.role === 'landlord' ? '/landlord/profile' : '/tenant/profile'}
+                                    className="text-charcoal hover:text-primary text-[15px] font-medium transition-colors"
+                                >
+                                    My Profile
                                 </Link>
                                 <button onClick={handleLogout} className="text-charcoal hover:text-primary text-[15px] font-medium transition-colors">
                                     Logout
                                 </button>
                                 <div className="h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold shadow-sm">
-                                    {user.name.charAt(0).toUpperCase()}
+                                    {user.name?.charAt(0).toUpperCase() ?? '?'}
                                 </div>
                             </div>
                         ) : (
@@ -130,8 +139,17 @@ const Navbar = () => {
                     </div>
                     {user ? (
                         <>
-                            <Link to="/dashboard" className="block text-charcoal py-2 text-lg font-medium border-b border-off-white">
+                            <Link
+                                to={user.role === 'landlord' ? '/landlord/dashboard' : '/tenant/dashboard'}
+                                className="block text-charcoal py-2 text-lg font-medium border-b border-off-white"
+                            >
                                 Dashboard
+                            </Link>
+                            <Link
+                                to={user.role === 'landlord' ? '/landlord/profile' : '/tenant/profile'}
+                                className="block text-charcoal py-2 text-lg font-medium border-b border-off-white"
+                            >
+                                My Profile
                             </Link>
                             <button onClick={handleLogout} className="block text-left w-full text-charcoal py-2 text-lg font-medium border-b border-off-white">
                                 Logout

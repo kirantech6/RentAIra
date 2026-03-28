@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if a user is authenticated
+    function isAuthenticated() { return request.auth != null; }
+    
+    // Check if the current user has the 'landlord' role
+    function isLandlord() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'landlord';
+    }
+
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      // Users can only update their own records
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    match /properties/{propertyId} {
+      // Properties are public to read for authenticated users
+      allow read: if isAuthenticated();
+      // Only landlords can create properties
+      allow create: if isAuthenticated() && isLandlord() && request.resource.data.landlordId == request.auth.uid;
+      // Only the owning landlord can update/delete
+      allow update, delete: if isAuthenticated() && isLandlord() && resource.data.landlordId == request.auth.uid;
+    }
+
+    match /applications/{applicationId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.tenantId == request.auth.uid || 
+        get(/databases/$(database)/documents/properties/$(resource.data.propertyId)).data.landlordId == request.auth.uid);
+      
+      // Tenant can create applications. 
+      // If priority is set, they must send fee 500, otherwise 0.
+      allow create: if isAuthenticated() && request.resource.data.tenantId == request.auth.uid
+        && (!('isPriority' in request.resource.data) || 
+           (request.resource.data.isPriority == true && request.resource.data.applicationFee == 500) || 
+           (request.resource.data.isPriority == false && request.resource.data.applicationFee == 0));
+           
+      // Landlords can update status, but cannot alter the fee or priority flags
+      allow update: if isAuthenticated() && 
+        get(/databases/$(database)/documents/properties/$(resource.data.propertyId)).data.landlordId == request.auth.uid
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['applicationFee', 'isPriority']));
+    }
+
+    match /agreements/{agreementId} {
+      // Landlord and tenant involved in the agreement can read it.
+      allow read: if isAuthenticated() && 
+        (resource.data.tenantId == request.auth.uid || resource.data.landlordId == request.auth.uid);
+      
+      // Creating agreement is allowed but landlords cannot write `pdfUrl` or `termsSummary`
+      // Also enforcing standard platformFeePercent on creation
+      allow create: if isAuthenticated() && request.resource.data.landlordId == request.auth.uid
+        && !('pdfUrl' in request.resource.data)
+        && !('termsSummary' in request.resource.data)
+        && (!('platformFeePercent' in request.resource.data) || request.resource.data.platformFeePercent == 1);
+      
+      // Updating agreement is allowed but `pdfUrl`, `termsSummary`, and platform fees cannot be manually edited by landlord
+      allow update: if isAuthenticated() && resource.data.landlordId == request.auth.uid
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['pdfUrl', 'termsSummary', 'platformFeePercent', 'platformFeeAmount']));
+      
+      // Admin (Cloud Functions) bypasses these rules and writes the pdfUrl/termsSummary directly.
+    }
+
+    match /platformRevenues/{revenueId} {
+      // Landlords can write to it upon creating successful agreements, admins can read
+      allow create: if isAuthenticated() && request.resource.data.landlordId == request.auth.uid;
+      allow read: if isAuthenticated();
+      allow update, delete: if false; // immutable log
+    }
+
+    match /tickets/{ticketId} {
+      allow read, update: if isAuthenticated() && 
+        (resource.data.tenantId == request.auth.uid || 
+        get(/databases/$(database)/documents/properties/$(resource.data.propertyId)).data.landlordId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.tenantId == request.auth.uid;
+    }
+
+    match /payments/{paymentId} {
+      allow read, update: if isAuthenticated() && 
+        (resource.data.tenantId == request.auth.uid || 
+        get(/databases/$(database)/documents/properties/$(resource.data.propertyId)).data.landlordId == request.auth.uid);
+      allow create: if isAuthenticated() && get(/databases/$(database)/documents/properties/$(request.resource.data.propertyId)).data.landlordId == request.auth.uid;
+    }
+
+    match /reports/{reportId} {
+      allow create: if isAuthenticated() && request.resource.data.reportedByUserId == request.auth.uid;
+      allow read, update, delete: if false; // Only admin via Firebase console / Cloud Functions
+    }
+  }
+}

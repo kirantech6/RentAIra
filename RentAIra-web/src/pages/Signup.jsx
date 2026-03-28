@@ -11,7 +11,7 @@ const Signup = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        role: 'renter', // default
+        role: 'tenant', // default to tenant (was 'renter')
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -39,7 +39,13 @@ const Signup = () => {
             const { confirmPassword, ...dataToSubmit } = formData;
             await register(dataToSubmit);
             setLoading(false);
-            navigate('/login'); // Redirect to login
+
+            // After signup, send to role-appropriate profile page to complete setup
+            if (formData.role === 'landlord') {
+                navigate('/landlord/profile');
+            } else {
+                navigate('/tenant/profile');
+            }
         } catch (err) {
             setError('Failed to create an account.');
             setLoading(false);
@@ -50,8 +56,8 @@ const Signup = () => {
         <div className="flex items-center justify-center min-h-[80vh] bg-gray-50 px-4">
             <Card className="w-full max-w-md">
                 <CardHeader>
-                    <CardTitle className="text-center text-2xl font-bold text-indigo-700">Join RentAIra</CardTitle>
-                    <p className="text-center text-sm text-gray-500">The AI-Powered Era of Renting</p>
+                    <CardTitle className="text-center text-2xl font-bold" style={{ color: '#FF4D5A' }}>Join RentAIra</CardTitle>
+                    <p className="text-center text-sm text-gray-500 mt-1">Smart Renting Made Simple</p>
                 </CardHeader>
                 <CardContent>
                     {error && <div className="mb-4 text-red-600 text-sm text-center bg-red-50 p-2 rounded">{error}</div>}
@@ -75,17 +81,34 @@ const Signup = () => {
                             required
                         />
                         <div className="space-y-1">
-                            <label className="block text-sm font-medium text-gray-700">I am a...</label>
-                            <select
-                                name="role"
-                                value={formData.role}
-                                onChange={handleChange}
-                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2 bg-white"
-                            >
-                                <option value="renter">Renter</option>
-                                <option value="landlord">Landlord</option>
-                                <option value="manager">Property Manager</option>
-                            </select>
+                            <label className="block text-sm font-medium text-gray-700">I am a…</label>
+                            <div className="grid grid-cols-2 gap-3 mt-1">
+                                {[
+                                    { value: 'tenant', label: '🏠 Tenant', sub: 'Looking to rent' },
+                                    { value: 'landlord', label: '🏢 Landlord', sub: 'Listing properties' },
+                                ].map(opt => (
+                                    <label
+                                        key={opt.value}
+                                        className={`flex flex-col items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all ${
+                                            formData.role === opt.value
+                                                ? 'border-[#FF4D5A] bg-red-50'
+                                                : 'border-gray-200 hover:border-gray-300'
+                                        }`}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="role"
+                                            value={opt.value}
+                                            checked={formData.role === opt.value}
+                                            onChange={handleChange}
+                                            className="sr-only"
+                                        />
+                                        <span className="text-xl mb-0.5">{opt.label.split(' ')[0]}</span>
+                                        <span className="text-sm font-semibold text-gray-800">{opt.label.slice(2)}</span>
+                                        <span className="text-[10px] text-gray-400">{opt.sub}</span>
+                                    </label>
+                                ))}
+                            </div>
                         </div>
                         <Input
                             label="Password"
@@ -108,12 +131,15 @@ const Signup = () => {
                         <Button type="submit" className="w-full" isLoading={loading}>
                             Create Account
                         </Button>
+                        <p className="text-xs text-center text-gray-400">
+                            After signup you'll be guided to complete your profile to get better matches.
+                        </p>
                     </form>
                 </CardContent>
                 <CardFooter className="justify-center">
                     <p className="text-sm text-gray-600">
                         Already have an account?{' '}
-                        <Link to="/login" className="text-indigo-600 hover:text-indigo-500 font-medium">Log in</Link>
+                        <Link to="/login" className="text-[#FF4D5A] hover:underline font-medium">Log in</Link>
                     </p>
                 </CardFooter>
             </Card>

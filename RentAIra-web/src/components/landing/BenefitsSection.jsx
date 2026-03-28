@@ -5,17 +5,21 @@ import Button from '../ui/Button';
 
 const BenefitsSection = () => {
     const renterBenefits = [
-        "No fake listings",
-        "Transparent pricing",
-        "Digital lease signing",
-        "Easy maintenance requests"
+        "Zero Security Deposit Options",
+        "Smart Digital Registered Leases",
+        "Rent Lock Guarantees",
+        "Inclusive Profile Matchmaking",
+        "Escrow-backed Maintenance",
+        "Verified Direct Owners Only"
     ];
 
     const landlordBenefits = [
-        "Verified tenants",
-        "Faster applications",
-        "Automated leases",
-        "Centralized management"
+        "Guaranteed Rent Insurance",
+        "Standardized Digital Agreements",
+        "Fair & Automated Annual Increases",
+        "Verified & Pre-screened Tenants",
+        "Scheduled Maintenace & Privacy",
+        "Zero Brokerage Fees"
     ];
 
     return (

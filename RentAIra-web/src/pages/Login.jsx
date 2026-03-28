@@ -19,9 +19,16 @@ const Login = () => {
 
         try {
             setLoading(true);
-            await login(email, password);
+            const loggedInUser = await login(email, password);
             setLoading(false);
-            navigate('/dashboard');
+            // Role-aware redirect
+            if (loggedInUser?.role === 'tenant') {
+                navigate('/tenant/dashboard');
+            } else if (loggedInUser?.role === 'landlord') {
+                navigate('/landlord/dashboard');
+            } else {
+                navigate('/dashboard');
+            }
         } catch (err) {
             setError('Invalid email or password');
             setLoading(false);
@@ -32,7 +39,7 @@ const Login = () => {
         <div className="flex items-center justify-center min-h-[80vh] bg-gray-50 px-4">
             <Card className="w-full max-w-md">
                 <CardHeader>
-                    <CardTitle className="text-center text-2xl font-bold text-indigo-700">Welcome Back</CardTitle>
+                    <CardTitle className="text-center text-2xl font-bold" style={{ color: '#FF4D5A' }}>Welcome Back</CardTitle>
                     <p className="text-center text-sm text-gray-500">Log in to your RentAIra account</p>
                 </CardHeader>
                 <CardContent>
@@ -71,7 +78,7 @@ const Login = () => {
                 <CardFooter className="justify-center">
                     <p className="text-sm text-gray-600">
                         Don't have an account?{' '}
-                        <Link to="/signup" className="text-indigo-600 hover:text-indigo-500 font-medium">Sign up</Link>
+                        <Link to="/signup" className="text-[#FF4D5A] hover:underline font-medium">Sign up</Link>
                     </p>
                 </CardFooter>
             </Card>

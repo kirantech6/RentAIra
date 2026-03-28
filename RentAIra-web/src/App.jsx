@@ -15,6 +15,15 @@ import Profile from './pages/Profile';
 import MessagesPage from './pages/MessagesPage';
 import Landlords from './pages/Landlords';
 
+// New Role-based dashboard routes
+import TenantDashboard from './pages/Tenant/Dashboard';
+import TenantProperties from './pages/Tenant/Properties';
+import TenantProfile from './pages/Tenant/Profile';
+import LandlordDashboard from './pages/Landlord/Dashboard';
+import LandlordProperties from './pages/Landlord/Properties';
+import LandlordTickets from './pages/Landlord/Tickets';
+import LandlordProfile from './pages/Landlord/Profile';
+
 import { app, analytics } from './lib/firebase';
 
 function App() {
@@ -43,6 +52,15 @@ function App() {
                   <Route path="/payments" element={<PaymentsPage />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/messages" element={<MessagesPage />} />
+
+                  {/* Role Specific Routes */}
+                  <Route path="/tenant/dashboard" element={<TenantDashboard />} />
+                  <Route path="/tenant/properties" element={<TenantProperties />} />
+                  <Route path="/tenant/profile" element={<TenantProfile />} />
+                  <Route path="/landlord/dashboard" element={<LandlordDashboard />} />
+                  <Route path="/landlord/properties" element={<LandlordProperties />} />
+                  <Route path="/landlord/tickets" element={<LandlordTickets />} />
+                  <Route path="/landlord/profile" element={<LandlordProfile />} />
                 </Route>
 
                 <Route path="*" element={<div className="p-10 text-center">404 Not Found</div>} />

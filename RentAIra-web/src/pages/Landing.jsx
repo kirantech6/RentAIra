@@ -1,6 +1,7 @@
 import React from 'react';
 import Hero from '../components/landing/Hero';
 import TrustStrip from '../components/landing/TrustStrip';
+import ProblemSolution from '../components/landing/ProblemSolution';
 import HowItWorks from '../components/landing/HowItWorks';
 import BenefitsSection from '../components/landing/BenefitsSection';
 import AISection from '../components/landing/AISection';
@@ -13,6 +14,7 @@ const Landing = () => {
         <div className="flex flex-col min-h-screen">
             <Hero />
             <TrustStrip />
+            <ProblemSolution />
             <HowItWorks />
             <BenefitsSection />
             <AISection />

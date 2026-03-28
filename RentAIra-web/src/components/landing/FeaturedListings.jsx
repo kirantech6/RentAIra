@@ -1,4 +1,6 @@
 import { useLocale } from '../../context/LocaleContext';
+import { ShieldCheck, MapPin, Bed, Bath } from 'lucide-react';
+import Button from '../ui/Button';
 
 const FeaturedListings = () => {
     const { locale, formatCurrency } = useLocale();
