@@ -64,8 +64,11 @@ export const AuthProvider = ({ children }) => {
         });
     }
 
+    // Map user to currentUser for legacy Firebase code compatibility
+    const currentUser = user ? { ...user, uid: user.uid || user.id } : null;
+
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser }}>
+        <AuthContext.Provider value={{ user, currentUser, loading, login, register, logout, updateUser }}>
             {children}
         </AuthContext.Provider>
     );
