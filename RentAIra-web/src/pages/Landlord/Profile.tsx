@@ -17,7 +17,8 @@ interface PortfolioStats {
 }
 
 const LandlordProfile: React.FC = () => {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
+  const currentUser = user;
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
@@ -41,35 +42,45 @@ const LandlordProfile: React.FC = () => {
 
   useEffect(() => {
     if (!currentUser) return;
-    const fetchAll = async () => {
-      // Profile
-      const ref = doc(db, 'users', currentUser.uid);
-      const snap = await getDoc(ref);
-      if (snap.exists()) setForm(prev => ({ ...prev, ...snap.data() }));
-
-      // Portfolio stats
-      const propSnap = await getDocs(query(collection(db, 'properties'), where('landlordId', '==', currentUser.uid)));
-      const props = propSnap.docs.map(d => ({ id: d.id, ...d.data() } as Property));
-      const activeProps = props.filter(p => p.isActive);
-      const propIds = props.map(p => p.id!).filter(Boolean);
-
-      let openTickets = 0;
-      if (propIds.length > 0) {
-        const ticketSnap = await getDocs(query(collection(db, 'tickets'), where('propertyId', 'in', propIds.slice(0, 10))));
-        openTickets = ticketSnap.docs.filter(d => d.data().status === 'open').length;
-      }
-
-      const agreeSnap = await getDocs(query(collection(db, 'agreements'), where('landlordId', '==', currentUser.uid), where('status', '==', 'active')));
-      const activeAgreements = agreeSnap.docs.map(d => d.data() as Agreement);
-
-      setStats({
-        activePropertiesCount: activeProps.length,
-        activeTenantsCount: activeAgreements.length,
-        openTicketsCount: openTickets,
-        expectedMonthlyRentTotal: activeAgreements.reduce((sum, a) => sum + (a.monthlyRent ?? 0), 0),
-      });
-
+    const uid = currentUser.uid || currentUser.id;
+    if (!uid) {
       setLoading(false);
+      return;
+    }
+
+    const fetchAll = async () => {
+      try {
+        // Profile
+        const ref = doc(db, 'users', uid);
+        const snap = await getDoc(ref);
+        if (snap.exists()) setForm(prev => ({ ...prev, ...snap.data() }));
+
+        // Portfolio stats
+        const propSnap = await getDocs(query(collection(db, 'properties'), where('landlordId', '==', uid)));
+        const props = propSnap.docs.map(d => ({ id: d.id, ...d.data() } as Property));
+        const activeProps = props.filter(p => p.isActive);
+        const propIds = props.map(p => p.id!).filter(Boolean);
+
+        let openTickets = 0;
+        if (propIds.length > 0) {
+          const ticketSnap = await getDocs(query(collection(db, 'tickets'), where('propertyId', 'in', propIds.slice(0, 10))));
+          openTickets = ticketSnap.docs.filter(d => d.data().status === 'open').length;
+        }
+
+        const agreeSnap = await getDocs(query(collection(db, 'agreements'), where('landlordId', '==', uid), where('status', '==', 'active')));
+        const activeAgreements = agreeSnap.docs.map(d => d.data() as Agreement);
+
+        setStats({
+          activePropertiesCount: activeProps.length,
+          activeTenantsCount: activeAgreements.length,
+          openTicketsCount: openTickets,
+          expectedMonthlyRentTotal: activeAgreements.reduce((sum, a) => sum + (a.monthlyRent ?? 0), 0),
+        });
+      } catch (err) {
+        console.error('Error fetching profile data:', err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchAll();
   }, [currentUser]);
@@ -87,9 +98,11 @@ const LandlordProfile: React.FC = () => {
 
   const handleSave = async () => {
     if (!currentUser || !validate()) return;
+    const uid = currentUser.uid || currentUser.id;
+    if (!uid) return;
     setSaving(true);
     try {
-      const ref = doc(db, 'users', currentUser.uid);
+      const ref = doc(db, 'users', uid);
       await setDoc(ref, {
         ...form,
         role: 'landlord',
