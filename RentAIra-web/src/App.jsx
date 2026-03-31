@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { DataProvider } from './context/DataContext';
 import { LocaleProvider } from './context/LocaleContext';
@@ -14,6 +14,7 @@ import PaymentsPage from './pages/PaymentsPage';
 import Profile from './pages/Profile';
 import MessagesPage from './pages/MessagesPage';
 import Landlords from './pages/Landlords';
+import FeaturePage from './pages/FeaturePage';
 
 // New Role-based dashboard routes
 import TenantDashboard from './pages/Tenant/Dashboard';
@@ -43,6 +44,7 @@ function App() {
                   <Route path="/listings" element={<Listings />} />
                   <Route path="/properties/:id" element={<PropertyDetails />} />
                   <Route path="/landlords" element={<Landlords />} />
+                  <Route path="/features/:category/:featureId" element={<FeaturePage />} />
                 </Route>
 
                 {/* Protected Routes */}

@@ -106,7 +106,7 @@ const Navbar = () => {
                                             <ul className="space-y-5">
                                                 {col.items.map((item, itemIdx) => (
                                                     <li key={itemIdx}>
-                                                        <Link to="#" className="flex items-center group/item outline-none">
+                                                        <Link to={`/features/${col.category.toLowerCase().replace(/\s+/g, '-')}/${item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} className="flex items-center group/item outline-none">
                                                             <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center mr-4 transition-colors group-hover/item:bg-blue-100">
                                                                 {item.icon}
                                                             </div>
@@ -213,7 +213,7 @@ const Navbar = () => {
                                 <ul className="space-y-3">
                                     {col.items.map((item, itemIdx) => (
                                         <li key={itemIdx}>
-                                            <Link to="#" className="flex items-center text-sm text-gray-500">
+                                            <Link to={`/features/${col.category.toLowerCase().replace(/\s+/g, '-')}/${item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} className="flex items-center text-sm text-gray-500 hover:text-primary transition-colors">
                                                 <div className="w-6 h-6 rounded bg-blue-50 flex items-center justify-center mr-2">
                                                     {React.cloneElement(item.icon, { className: "w-3 h-3 text-blue-600" })}
                                                 </div>

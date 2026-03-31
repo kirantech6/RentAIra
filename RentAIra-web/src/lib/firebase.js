@@ -7,13 +7,13 @@ import { getStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID,
-    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+    apiKey: "AIzaSyDLo5gtYvDsBXzhx8_HJFZ23xO3xSx7xNU",
+    authDomain: "rentaira-a07bf.firebaseapp.com",
+    projectId: "rentaira-a07bf",
+    storageBucket: "rentaira-a07bf.firebasestorage.app",
+    messagingSenderId: "905222131352",
+    appId: "1:905222131352:web:e2ff9eafb7497423428aed",
+    measurementId: "G-9VMRBJPRJ9"
 };
 
 // Initialize Firebase
