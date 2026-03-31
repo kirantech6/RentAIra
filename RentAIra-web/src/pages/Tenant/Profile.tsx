@@ -35,12 +35,17 @@ const TenantProfile: React.FC = () => {
   useEffect(() => {
     if (!currentUser) return;
     const fetchProfile = async () => {
-      const ref = doc(db, 'users', currentUser.uid);
-      const snap = await getDoc(ref);
-      if (snap.exists()) {
-        setForm(prev => ({ ...prev, ...snap.data() }));
+      try {
+        const ref = doc(db, 'users', currentUser.uid);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          setForm(prev => ({ ...prev, ...snap.data() }));
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     fetchProfile();
   }, [currentUser]);

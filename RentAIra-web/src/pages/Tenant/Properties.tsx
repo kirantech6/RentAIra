@@ -24,44 +24,49 @@ const TenantProperties: React.FC = () => {
     if (!currentUser) return;
     
     const fetchData = async () => {
-      // Fetch real profile from Firestore
-      let profile: User = { 
-        role: 'tenant', name: '', email: '', phone: '',
-        preferredCities: [],
-        budgetMin: 0, budgetMax: 0, 
-        kycStatus: 'not_submitted', isVerified: false 
-      };
-
       try {
-        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-        if (userDoc.exists()) {
-          profile = { id: userDoc.id, ...userDoc.data() } as User;
-        }
-      } catch (_) {}
+        // Fetch real profile from Firestore
+        let profile: User = { 
+          role: 'tenant', name: '', email: '', phone: '',
+          preferredCities: [],
+          budgetMin: 0, budgetMax: 0, 
+          kycStatus: 'not_submitted', isVerified: false 
+        };
 
-      setUserProfile(profile);
-      const pct = computeTenantProfileCompletion(profile);
-      setProfileComplete(pct);
+        try {
+          const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+          if (userDoc.exists()) {
+            profile = { id: userDoc.id, ...userDoc.data() } as User;
+          }
+        } catch (_) {}
 
-      // Block apply if minimum profile fields (city + budget) are missing
-      const hasMinProfile = (
-        (profile.preferredCities?.length ?? 0) > 0 &&
-        (profile.budgetMin ?? 0) > 0 &&
-        (profile.budgetMax ?? 0) > 0
-      );
-      setCanApply(hasMinProfile);
+        setUserProfile(profile);
+        const pct = computeTenantProfileCompletion(profile);
+        setProfileComplete(pct);
 
-      const propSnap = await getDocs(query(collection(db, 'properties'), where('isActive', '==', true)));
-      const allProps = propSnap.docs.map(d => ({ id: d.id, ...d.data() } as Property));
-      
-      const scoredProps = allProps.map(p => ({
-        ...p,
-        score: calculateMatchScore(profile, p),
-        reasons: explainMatchScore(profile, p),
-      })).sort((a, b) => b.score - a.score);
+        // Block apply if minimum profile fields (city + budget) are missing
+        const hasMinProfile = (
+          (profile.preferredCities?.length ?? 0) > 0 &&
+          (profile.budgetMin ?? 0) > 0 &&
+          (profile.budgetMax ?? 0) > 0
+        );
+        setCanApply(hasMinProfile);
 
-      setProperties(scoredProps);
-      setLoading(false);
+        const propSnap = await getDocs(query(collection(db, 'properties'), where('isActive', '==', true)));
+        const allProps = propSnap.docs.map(d => ({ id: d.id, ...d.data() } as Property));
+        
+        const scoredProps = allProps.map(p => ({
+          ...p,
+          score: calculateMatchScore(profile, p),
+          reasons: explainMatchScore(profile, p),
+        })).sort((a, b) => b.score - a.score);
+
+        setProperties(scoredProps);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();

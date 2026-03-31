@@ -24,41 +24,45 @@ const TenantDashboard: React.FC = () => {
   useEffect(() => {
     if (!currentUser) return;
     const fetchData = async () => {
-      // 1. Fetch Tenant Profile from Firestore
-      let profile: User = {
-        role: 'tenant', name: '', email: '', phone: '',
-        preferredCities: ['Bangalore', 'Mumbai'],
-        budgetMin: 10000, budgetMax: 30000,
-        kycStatus: 'not_submitted', isVerified: false
-      };
       try {
-        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-        if (userDoc.exists()) profile = { id: userDoc.id, ...userDoc.data() } as User;
-      } catch (_) {}
-      setUserProfile(profile);
+        // 1. Fetch Tenant Profile from Firestore
+        let profile: User = {
+          role: 'tenant', name: '', email: '', phone: '',
+          preferredCities: ['Bangalore', 'Mumbai'],
+          budgetMin: 10000, budgetMax: 30000,
+          kycStatus: 'not_submitted', isVerified: false
+        };
+        try {
+          const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+          if (userDoc.exists()) profile = { id: userDoc.id, ...userDoc.data() } as User;
+        } catch (_) {}
+        setUserProfile(profile);
 
-      // 2. Active Properties with match scores
-      const propSnap = await getDocs(query(collection(db, 'properties'), where('isActive', '==', true)));
-      const allProps = propSnap.docs.map(d => ({ id: d.id, ...d.data() } as Property));
-      const scoredProps = allProps
-        .map(p => ({ ...p, score: calculateMatchScore(profile, p), reasons: explainMatchScore(profile, p) }))
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 3);
-      setRecommended(scoredProps);
+        // 2. Active Properties with match scores
+        const propSnap = await getDocs(query(collection(db, 'properties'), where('isActive', '==', true)));
+        const allProps = propSnap.docs.map(d => ({ id: d.id, ...d.data() } as Property));
+        const scoredProps = allProps
+          .map(p => ({ ...p, score: calculateMatchScore(profile, p), reasons: explainMatchScore(profile, p) }))
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 3);
+        setRecommended(scoredProps);
 
-      // 3. Applications
-      const appSnap = await getDocs(query(collection(db, 'applications'), where('tenantId', '==', currentUser.uid)));
-      setApplications(appSnap.docs.map(d => ({ id: d.id, ...d.data() } as Application)));
+        // 3. Applications
+        const appSnap = await getDocs(query(collection(db, 'applications'), where('tenantId', '==', currentUser.uid)));
+        setApplications(appSnap.docs.map(d => ({ id: d.id, ...d.data() } as Application)));
 
-      // 4. Agreements
-      const agreeSnap = await getDocs(query(collection(db, 'agreements'), where('tenantId', '==', currentUser.uid)));
-      setAgreements(agreeSnap.docs.map(d => ({ id: d.id, ...d.data() } as Agreement)));
+        // 4. Agreements
+        const agreeSnap = await getDocs(query(collection(db, 'agreements'), where('tenantId', '==', currentUser.uid)));
+        setAgreements(agreeSnap.docs.map(d => ({ id: d.id, ...d.data() } as Agreement)));
 
-      // 5. Tickets
-      const ticketSnap = await getDocs(query(collection(db, 'tickets'), where('tenantId', '==', currentUser.uid)));
-      setTickets(ticketSnap.docs.map(d => ({ id: d.id, ...d.data() } as Ticket)));
-
-      setLoading(false);
+        // 5. Tickets
+        const ticketSnap = await getDocs(query(collection(db, 'tickets'), where('tenantId', '==', currentUser.uid)));
+        setTickets(ticketSnap.docs.map(d => ({ id: d.id, ...d.data() } as Ticket)));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
   }, [currentUser]);

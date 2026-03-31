@@ -25,69 +25,77 @@ const LandlordDashboard: React.FC = () => {
     if (!currentUser) return;
 
     const fetchData = async () => {
-      // 0. Landlord Profile
-      try {
-        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-        if (userDoc.exists()) setLandlordProfile({ id: userDoc.id, ...userDoc.data() } as User);
-      } catch (_) {}
-
-      // 1. Properties
-      const propSnap = await getDocs(query(collection(db, 'properties'), where('landlordId', '==', currentUser.uid)));
-      const props = propSnap.docs.map(d => ({ id: d.id, ...d.data() } as Property));
-      setProperties(props);
-
-      if (props.length === 0) return;
-
-      const propIds = props.map(p => p.id);
+      const uid = currentUser?.uid || currentUser?.id;
+      if (!uid) {
+        setLoading(false);
+        return;
+      }
       
-      // 2. Applications (Firestore IN query limitation requires chunking if >10, assuming MVP <10 for now just query all or simple loops)
-      // Since landlordId is checked in rules, we can fetch all and filter client side if necessary, but better to query by propertyId
-      // For MVP, we will fetch applications for the properties
-      const apps = await Promise.all(
-        propIds.map(async pid => {
-          const qObj = query(collection(db, 'applications'), where('propertyId', '==', pid));
-          const snap = await getDocs(qObj);
-          return snap.docs.map(d => ({ id: d.id, ...d.data() } as Application));
-        })
-      );
-      // Sort applications to prioritize 'isPriority' == true
-      const allApps = apps.flat().sort((a, b) => {
-        if (a.isPriority && !b.isPriority) return -1;
-        if (!a.isPriority && b.isPriority) return 1;
-        return 0;
-      });
-      setApplications(allApps);
+      try {
+        // 0. Landlord Profile
+        try {
+          const userDoc = await getDoc(doc(db, 'users', uid));
+          if (userDoc.exists()) setLandlordProfile({ id: userDoc.id, ...userDoc.data() } as User);
+        } catch (_) {}
 
-      // Fetch tenant profiles for Trust Score display (best-effort)
-      const uniqueTenantIds = [...new Set(allApps.map(a => a.tenantId))].slice(0, 10);
-      if (uniqueTenantIds.length > 0) {
-        const profileMap: Record<string, Partial<User>> = {};
-        await Promise.all(
-          uniqueTenantIds.map(async tid => {
-            try {
-              const tSnap = await getDoc(doc(db, 'users', tid));
-              if (tSnap.exists()) profileMap[tid] = tSnap.data() as Partial<User>;
-            } catch (_) {}
+        // 1. Properties
+        const propSnap = await getDocs(query(collection(db, 'properties'), where('landlordId', '==', uid)));
+        const props = propSnap.docs.map(d => ({ id: d.id, ...d.data() } as Property));
+        setProperties(props);
+
+        if (props.length === 0) return;
+
+        const propIds = props.map(p => p.id);
+        
+        // 2. Applications (Firestore IN query limitation requires chunking if >10, assuming MVP <10 for now just query all or simple loops)
+        const apps = await Promise.all(
+          propIds.map(async pid => {
+            const qObj = query(collection(db, 'applications'), where('propertyId', '==', pid));
+            const snap = await getDocs(qObj);
+            return snap.docs.map(d => ({ id: d.id, ...d.data() } as Application));
           })
         );
-        setTenantProfiles(profileMap);
+        // Sort applications to prioritize 'isPriority' == true
+        const allApps = apps.flat().sort((a, b) => {
+          if (a.isPriority && !b.isPriority) return -1;
+          if (!a.isPriority && b.isPriority) return 1;
+          return 0;
+        });
+        setApplications(allApps);
+
+        // Fetch tenant profiles for Trust Score display (best-effort)
+        const uniqueTenantIds = [...new Set(allApps.map(a => a.tenantId))].slice(0, 10);
+        if (uniqueTenantIds.length > 0) {
+          const profileMap: Record<string, Partial<User>> = {};
+          await Promise.all(
+            uniqueTenantIds.map(async tid => {
+              try {
+                const tSnap = await getDoc(doc(db, 'users', tid));
+                if (tSnap.exists()) profileMap[tid] = tSnap.data() as Partial<User>;
+              } catch (_) {}
+            })
+          );
+          setTenantProfiles(profileMap);
+        }
+
+        // 3. Tickets
+        const ticks = await Promise.all(
+          propIds.map(async pid => {
+            const qObj = query(collection(db, 'tickets'), where('propertyId', '==', pid), where('status', '!=', 'closed'));
+            const snap = await getDocs(qObj);
+            return snap.docs.map(d => ({ id: d.id, ...d.data() } as Ticket));
+          })
+        );
+        setTickets(ticks.flat());
+        
+        // 4. Agreements
+        const agreeSnap = await getDocs(query(collection(db, 'agreements'), where('landlordId', '==', uid)));
+        setAgreements(agreeSnap.docs.map(d => ({ id: d.id, ...d.data() } as Agreement)));
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err);
+      } finally {
+        setLoading(false);
       }
-
-      // 3. Tickets
-      const ticks = await Promise.all(
-        propIds.map(async pid => {
-          const qObj = query(collection(db, 'tickets'), where('propertyId', '==', pid), where('status', '!=', 'closed'));
-          const snap = await getDocs(qObj);
-          return snap.docs.map(d => ({ id: d.id, ...d.data() } as Ticket));
-        })
-      );
-      setTickets(ticks.flat());
-      
-      // 4. Agreements
-      const agreeSnap = await getDocs(query(collection(db, 'agreements'), where('landlordId', '==', currentUser.uid)));
-      setAgreements(agreeSnap.docs.map(d => ({ id: d.id, ...d.data() } as Agreement)));
-
-      setLoading(false);
     };
     fetchData();
   }, [currentUser]);
