@@ -10,6 +10,7 @@ import { Loader, EmptyState } from '../../components/common/UIStates';
 import { Property, Application, Agreement, Ticket, User } from '../../types';
 import { calculateMatchScore, computeTenantProfileCompletion, explainMatchScore } from '../../utils/businessLogic';
 import { Link } from 'react-router-dom';
+import { useLocale } from '../../context/LocaleContext';
 
 const TenantDashboard: React.FC = () => {
   const { currentUser } = useAuth();
@@ -20,6 +21,7 @@ const TenantDashboard: React.FC = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [userProfile, setUserProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const { formatCurrency } = useLocale();
 
   useEffect(() => {
     if (!currentUser) return;
@@ -90,8 +92,8 @@ const TenantDashboard: React.FC = () => {
             <div>
               <p className="font-bold text-gray-900">{userProfile?.name || 'Set up your profile'}</p>
               <p className="text-xs text-gray-500">
-                {userProfile?.currentCity ? `📍 ${userProfile.currentCity}` : 'City not set'} ·{' '}
-                Budget ₹{(userProfile?.budgetMin ?? 0).toLocaleString()}–₹{(userProfile?.budgetMax ?? 0).toLocaleString()} ·{' '}
+                {userProfile?.currentCity ? `📍 ${userProfile.currentCity}` : 'Location / County not set'} ·{' '}
+                Budget {formatCurrency(userProfile?.budgetMin ?? 0)}–{formatCurrency(userProfile?.budgetMax ?? 0)} ·{' '}
                 {userProfile?.desiredBhkMin ?? '?'}–{userProfile?.desiredBhkMax ?? '?'} BHK
               </p>
               <p className="text-[10px] text-gray-400 mt-0.5 italic">Match quality improves as your profile completes</p>

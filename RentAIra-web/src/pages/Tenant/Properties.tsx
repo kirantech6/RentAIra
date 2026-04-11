@@ -6,6 +6,7 @@ import PropertyCard from '../../components/common/PropertyCard';
 import { Property, User, Application } from '../../types';
 import { calculateMatchScore, explainMatchScore, computeTenantProfileCompletion } from '../../utils/businessLogic';
 import { Link } from 'react-router-dom';
+import { useLocale } from '../../context/LocaleContext';
 
 const TenantProperties: React.FC = () => {
   const { currentUser } = useAuth();
@@ -15,6 +16,7 @@ const TenantProperties: React.FC = () => {
   const [profileComplete, setProfileComplete] = useState(100);
   const [canApply, setCanApply] = useState(true);
   const [loading, setLoading] = useState(true);
+  const { formatCurrency } = useLocale();
 
   // Filters
   const [cityFilter, setCityFilter] = useState('');
@@ -92,7 +94,7 @@ const TenantProperties: React.FC = () => {
       };
       
       await addDoc(collection(db, 'applications'), newApp);
-      alert(`Application submitted ${isPriority ? '(Priority — ₹500 fee logged)' : ''}! The landlord will review it shortly.`);
+      alert(`Application submitted ${isPriority ? `(Priority — ${formatCurrency(500)} fee logged)` : ''}! The landlord will review it shortly.`);
     } catch (error) {
       console.error('Error applying to property:', error);
       alert('Failed to apply. You might have already applied or missing permissions.');
@@ -138,7 +140,7 @@ const TenantProperties: React.FC = () => {
       <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-8 flex flex-wrap gap-3">
         <input 
           type="text" 
-          placeholder="Filter by City (e.g. Bangalore)" 
+          placeholder="Filter by Location / County" 
           className="border p-2 rounded-lg flex-1 min-w-[160px] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF4D5A]"
           value={cityFilter}
           onChange={e => setCityFilter(e.target.value)}

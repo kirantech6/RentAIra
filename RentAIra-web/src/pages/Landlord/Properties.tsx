@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Property } from '../../types';
 import PropertyCard from '../../components/common/PropertyCard';
 import { getFairRentRange, computeRiskLevel } from '../../utils/businessLogic';
+import { useLocale } from '../../context/LocaleContext';
 
 const LandlordProperties: React.FC = () => {
   const { currentUser } = useAuth();
@@ -17,6 +18,7 @@ const LandlordProperties: React.FC = () => {
     isActive: true, isVerified: false, riskLevel: 'low'
   });
   const [fairRent, setFairRent] = useState<{ min: number, max: number, avg: number } | null>(null);
+  const { formatCurrency, currentCurrency } = useLocale();
 
   useEffect(() => {
     if (!currentUser) return;
@@ -79,12 +81,12 @@ const LandlordProperties: React.FC = () => {
           <div className="grid grid-cols-2 gap-4">
             <input type="text" placeholder="Title" required className="border p-2 rounded col-span-2"
               value={currentProp.title} onChange={e => setCurrentProp({ ...currentProp, title: e.target.value })} />
-            <input type="text" placeholder="City" required className="border p-2 rounded"
+            <input type="text" placeholder="Location / County" required className="border p-2 rounded"
               value={currentProp.city} onChange={e => {
                 setCurrentProp({ ...currentProp, city: e.target.value });
                 calculateFairRent(e.target.value, currentProp.bhk || 1);
               }} />
-            <input type="text" placeholder="Locality" required className="border p-2 rounded"
+            <input type="text" placeholder="Locality or Neighborhood" required className="border p-2 rounded"
               value={currentProp.locality} onChange={e => setCurrentProp({ ...currentProp, locality: e.target.value })} />
             <input type="number" placeholder="BHK" required className="border p-2 rounded"
               value={currentProp.bhk || ''} onChange={e => {
@@ -92,9 +94,9 @@ const LandlordProperties: React.FC = () => {
                 calculateFairRent(currentProp.city || '', parseInt(e.target.value));
               }} />
             <div className="flex gap-2">
-              <input type="number" placeholder="Rent (₹)" required className="border p-2 rounded w-full"
+              <input type="number" placeholder={`Rent (${currentCurrency.symbol})`} required className="border p-2 rounded w-full"
                 value={currentProp.rent || ''} onChange={e => setCurrentProp({ ...currentProp, rent: parseInt(e.target.value) })} />
-              <input type="number" placeholder="Deposit (₹)" required className="border p-2 rounded w-full"
+              <input type="number" placeholder={`Deposit (${currentCurrency.symbol})`} required className="border p-2 rounded w-full"
                 value={currentProp.deposit || ''} onChange={e => setCurrentProp({ ...currentProp, deposit: parseInt(e.target.value) })} />
             </div>
             <select className="border p-2 rounded" value={currentProp.furnishing} onChange={e => setCurrentProp({ ...currentProp, furnishing: e.target.value as any })}>
@@ -108,7 +110,7 @@ const LandlordProperties: React.FC = () => {
           {fairRent && fairRent.avg > 0 && (
             <div className="bg-blue-50 text-blue-800 p-4 rounded-lg my-4 flex justify-between items-center text-sm font-semibold">
               <span>🤖 Fair Rent Insight for {currentProp.bhk} BHK in {currentProp.city}:</span>
-              <span>Suggested Range: ₹{fairRent.min} - ₹{fairRent.max} (Avg: ₹{fairRent.avg})</span>
+              <span>Suggested Range: {formatCurrency(fairRent.min)} - {formatCurrency(fairRent.max)} (Avg: {formatCurrency(fairRent.avg)})</span>
             </div>
           )}
 

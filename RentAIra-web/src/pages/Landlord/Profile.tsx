@@ -6,6 +6,7 @@ import { User, Property, Agreement, Ticket } from '../../types';
 import { computeLandlordProfileCompletion } from '../../utils/businessLogic';
 import { Loader } from '../../components/common/UIStates';
 import { Link } from 'react-router-dom';
+import { useLocale } from '../../context/LocaleContext';
 
 const CITY_OPTIONS = ['Bangalore', 'Mumbai', 'Delhi', 'Pune', 'Hyderabad', 'Chennai', 'Kolkata', 'Gurgaon', 'Noida', 'Ahmedabad'];
 
@@ -23,6 +24,7 @@ const LandlordProfile: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
+  const { formatCurrency } = useLocale();
   const [stats, setStats] = useState<PortfolioStats>({
     activePropertiesCount: 0, activeTenantsCount: 0, openTicketsCount: 0, expectedMonthlyRentTotal: 0
   });
@@ -212,7 +214,7 @@ const LandlordProfile: React.FC = () => {
           { label: 'Active Properties', value: stats.activePropertiesCount, color: 'text-gray-900' },
           { label: 'Active Tenants', value: stats.activeTenantsCount, color: 'text-blue-700' },
           { label: 'Open Tickets', value: stats.openTicketsCount, color: 'text-red-600' },
-          { label: 'Expected Rent', value: `₹${stats.expectedMonthlyRentTotal.toLocaleString()}`, color: 'text-green-700' },
+          { label: 'Expected Rent', value: formatCurrency(stats.expectedMonthlyRentTotal), color: 'text-green-700' },
         ].map(s => (
           <div key={s.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 text-center">
             <p className="text-xs text-gray-500 font-semibold uppercase">{s.label}</p>
@@ -235,10 +237,10 @@ const LandlordProfile: React.FC = () => {
           {fieldWrap('Full Name', input('name', 'text', 'Full name'))}
           {fieldWrap('Business Name (optional)', input('businessName', 'text', 'e.g. My Properties Ltd'))}
           {fieldWrap('Phone', input('phone', 'text', '+91 98765 43210'))}
-          {fieldWrap('Primary City', input('primaryCity', 'text', 'e.g. Bangalore'))}
+          {fieldWrap('Primary Location/County', input('primaryCity', 'text', 'e.g. California'))}
         </div>
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Operating Cities</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Operating Locations / Counties</label>
           <div className="flex flex-wrap gap-2">
             {CITY_OPTIONS.map(city => (
               <button

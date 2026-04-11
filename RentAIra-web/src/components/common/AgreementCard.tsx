@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Agreement } from '../../types';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { app } from '../../lib/firebase';
+import { useLocale } from '../../context/LocaleContext';
 
 interface AgreementCardProps {
   agreement: Agreement;
@@ -24,6 +25,7 @@ const fmt = (d: any): string => {
 
 const AgreementCard: React.FC<AgreementCardProps> = ({ agreement, role, onGenerateSuccess }) => {
   const [isGenerating, setIsGenerating] = useState(false);
+  const { formatCurrency } = useLocale();
 
   const handleGeneratePdf = async () => {
     try {
@@ -55,13 +57,13 @@ const AgreementCard: React.FC<AgreementCardProps> = ({ agreement, role, onGenera
         </div>
         <div className="text-right">
           <p className="text-xl font-bold text-[#FF4D5A]">
-            ₹{(agreement.monthlyRent ?? 0).toLocaleString()}
+            {formatCurrency(agreement.monthlyRent ?? 0)}
             <span className="text-sm font-normal text-gray-500">/mo</span>
           </p>
-          <p className="text-xs text-gray-500">Deposit: ₹{(agreement.deposit ?? 0).toLocaleString()}</p>
+          <p className="text-xs text-gray-500">Deposit: {formatCurrency(agreement.deposit ?? 0)}</p>
           {/* Platform fee — always shown */}
           <p className="text-xs font-semibold text-purple-700 mt-0.5">
-            Platform Fee (1%): ₹{platformFeeAmt.toLocaleString()}
+            Platform Fee (1%): {formatCurrency(platformFeeAmt)}
           </p>
         </div>
       </div>

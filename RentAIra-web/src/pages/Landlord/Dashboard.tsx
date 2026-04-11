@@ -9,6 +9,7 @@ import AgreementCard from '../../components/common/AgreementCard';
 import { Loader, EmptyState } from '../../components/common/UIStates';
 import { Link } from 'react-router-dom';
 import { computeLandlordProfileCompletion } from '../../utils/businessLogic';
+import { useLocale } from '../../context/LocaleContext';
 
 const LandlordDashboard: React.FC = () => {
   const { currentUser } = useAuth();
@@ -20,6 +21,7 @@ const LandlordDashboard: React.FC = () => {
   const [landlordProfile, setLandlordProfile] = useState<User | null>(null);
   const [tenantProfiles, setTenantProfiles] = useState<Record<string, Partial<User>>>({});
   const [loading, setLoading] = useState(true);
+  const { formatCurrency } = useLocale();
 
   useEffect(() => {
     if (!currentUser) return;
@@ -192,7 +194,7 @@ const LandlordDashboard: React.FC = () => {
               )}
             </div>
             <p className="text-xs text-gray-500">
-              📍 {landlordProfile?.primaryCity || 'Primary city not set'} ·{' '}
+              📍 {landlordProfile?.primaryCity || 'Location / County not set'} ·{' '}
               Completion: <strong>{computeLandlordProfileCompletion(landlordProfile ?? {})}%</strong>
             </p>
             <p className="text-[10px] text-amber-700 bg-amber-50 rounded px-2 py-0.5 mt-1 inline-block">
@@ -221,11 +223,11 @@ const LandlordDashboard: React.FC = () => {
         </div>
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center">
           <p className="text-gray-500 text-sm font-semibold uppercase">Exp. Monthly Rent</p>
-          <p className="text-3xl font-bold text-green-600 mt-2">₹{expectedRent.toLocaleString()}</p>
+          <p className="text-3xl font-bold text-green-600 mt-2">{formatCurrency(expectedRent)}</p>
         </div>
         <div className="bg-purple-50 p-6 rounded-xl shadow-sm border border-purple-100 flex flex-col items-center">
           <p className="text-purple-600 text-sm font-semibold uppercase">Platform Fees (Model)</p>
-          <p className="text-3xl font-bold text-purple-900 mt-2">₹{totalPlatformFeesTheoretical.toLocaleString()}</p>
+          <p className="text-3xl font-bold text-purple-900 mt-2">{formatCurrency(totalPlatformFeesTheoretical)}</p>
         </div>
       </div>
 

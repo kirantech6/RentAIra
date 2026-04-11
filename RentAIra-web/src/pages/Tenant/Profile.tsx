@@ -6,6 +6,7 @@ import { User } from '../../types';
 import { computeTenantProfileCompletion } from '../../utils/businessLogic';
 import { Loader } from '../../components/common/UIStates';
 import { Link } from 'react-router-dom';
+import { useLocale } from '../../context/LocaleContext';
 
 const CITY_OPTIONS = ['Bangalore', 'Mumbai', 'Delhi', 'Pune', 'Hyderabad', 'Chennai', 'Kolkata', 'Gurgaon', 'Noida', 'Ahmedabad'];
 
@@ -15,6 +16,7 @@ const TenantProfile: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
+  const { currentCurrency } = useLocale();
 
   const [form, setForm] = useState<Partial<User>>({
     name: '', phone: '', currentCity: '', ageRange: '',
@@ -140,7 +142,7 @@ const TenantProfile: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold text-gray-900">{form.name || 'Your Name'}</h1>
             <p className="text-sm text-gray-500 mt-0.5">
-              Tenant · {form.currentCity || 'City not set'} ·{' '}
+              Tenant · {form.currentCity || 'Location / County not set'} ·{' '}
               <span className={`font-semibold ${
                 form.kycStatus === 'verified' ? 'text-green-600' :
                 form.kycStatus === 'pending' ? 'text-yellow-600' : 'text-gray-400'
@@ -183,8 +185,8 @@ const TenantProfile: React.FC = () => {
         <h2 className="text-lg font-bold text-gray-900 border-b pb-2">Basic Info</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {field('Full Name', input('name', 'text', 'Your full name'))}
-          {field('Phone', input('phone', 'text', '+91 98765 43210'))}
-          {field('Current City', input('currentCity', 'text', 'e.g. Bangalore'))}
+          {field('Phone', input('phone', 'text', '+1 234 567 8900'))}
+          {field('Current Location/County', input('currentCity', 'text', 'e.g. Cook County, IL'))}
           {field('Age Range', select('ageRange', [
             { value: '', label: 'Prefer not to say' },
             { value: '18-24', label: '18–24' },
@@ -205,7 +207,7 @@ const TenantProfile: React.FC = () => {
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
         <h2 className="text-lg font-bold text-gray-900 border-b pb-2">Rental Preferences</h2>
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Preferred Cities</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Preferred Locations / Counties</label>
           <div className="flex flex-wrap gap-2">
             {CITY_OPTIONS.map(city => (
               <button
@@ -224,8 +226,8 @@ const TenantProfile: React.FC = () => {
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {field('Budget Min (₹/mo)', input('budgetMin', 'number', '10000'))}
-          {field('Budget Max (₹/mo)', input('budgetMax', 'number', '30000'))}
+          {field(`Budget Min (${currentCurrency.symbol}/mo)`, input('budgetMin', 'number', '1000'))}
+          {field(`Budget Max (${currentCurrency.symbol}/mo)`, input('budgetMax', 'number', '3000'))}
           {field('Desired BHK Min', input('desiredBhkMin', 'number', '1'))}
           {field('Desired BHK Max', input('desiredBhkMax', 'number', '3'))}
           {field('Desired Furnishing', select('desiredFurnishing', [
@@ -264,7 +266,7 @@ const TenantProfile: React.FC = () => {
         <h2 className="text-lg font-bold text-gray-900 border-b pb-2">Rental History <span className="text-xs font-normal text-gray-400">(optional)</span></h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {field('Years Renting', input('yearsRenting', 'number', '0'))}
-          {field('Last Rented City', input('lastRentedCity', 'text', 'e.g. Pune'))}
+          {field('Last Rented Location / County', input('lastRentedCity', 'text', 'e.g. Orange County'))}
         </div>
         <div className="flex gap-6">
           {toggle('hasReferences', 'I have rental references')}

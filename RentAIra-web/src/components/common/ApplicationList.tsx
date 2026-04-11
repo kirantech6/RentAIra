@@ -1,6 +1,7 @@
 import React from 'react';
 import { Application, User } from '../../types';
 import { computeTenantTrustScore, getTenantTrustLabel } from '../../utils/businessLogic';
+import { useLocale } from '../../context/LocaleContext';
 
 interface ApplicationListProps {
   applications: Application[];
@@ -25,6 +26,8 @@ const trustColors: Record<string, string> = {
 const ApplicationList: React.FC<ApplicationListProps> = ({
   applications, role, tenantProfiles = {}, onAccept, onReject,
 }) => {
+  const { formatCurrency } = useLocale();
+
   if (!applications || applications.length === 0) {
     return <p className="text-gray-500 py-4">No applications found.</p>;
   }
@@ -68,7 +71,7 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
                 {/* Tenant fee info */}
                 {role === 'tenant' && (
                   <p className="text-xs text-gray-400 mt-0.5">
-                    Application fee: ₹{app.applicationFee ?? 0}
+                    Application fee: {formatCurrency(app.applicationFee ?? 0)}
                   </p>
                 )}
 

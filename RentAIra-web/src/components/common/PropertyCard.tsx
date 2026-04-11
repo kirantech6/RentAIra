@@ -1,6 +1,7 @@
 import React from 'react';
 import { Property, User } from '../../types';
 import { explainMatchScore } from '../../utils/businessLogic';
+import { useLocale } from '../../context/LocaleContext';
 
 interface PropertyCardProps {
   property: Property;
@@ -28,6 +29,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
 }) => {
   const [isPriority, setIsPriority] = React.useState(false);
   const [showWhy, setShowWhy] = React.useState(false);
+  const { formatCurrency, currentCurrency } = useLocale();
 
   const isNearlyDisqualified = matchScore !== undefined && matchScore <= 40;
 
@@ -92,15 +94,15 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
 
       <div className="p-5">
         <h3 className="text-lg font-bold text-gray-900 mb-0.5">{property.title}</h3>
-        <p className="text-sm text-gray-500 mb-3">{property.locality}, {property.city}</p>
+        <p className="text-sm text-gray-500 mb-3">{property.locality}, {property.city} (Location/County)</p>
 
         <div className="flex justify-between items-center mb-4">
           <div>
             <p className="text-xl font-bold text-[#FF4D5A]">
-              ₹{property.rent.toLocaleString()}
+              {formatCurrency(property.rent)}
               <span className="text-sm font-normal text-gray-500">/mo</span>
             </p>
-            <p className="text-xs text-gray-500">Deposit: ₹{property.deposit.toLocaleString()}</p>
+            <p className="text-xs text-gray-500">Deposit: {formatCurrency(property.deposit)}</p>
           </div>
           <div className="text-right">
             <p className="text-sm font-medium text-gray-700">{property.bhk} BHK</p>
@@ -135,7 +137,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
                   onChange={(e) => setIsPriority(e.target.checked)}
                 />
                 <span>
-                  <strong>Priority Application (₹500 fee)</strong>
+                  <strong>Priority Application ({formatCurrency(500)} fee)</strong>
                   <br />
                   <span className="text-xs text-gray-500">Highlight your application — landlords see it first!</span>
                 </span>
