@@ -81,7 +81,7 @@ const LandlordProperties: React.FC = () => {
           <div className="grid grid-cols-2 gap-4">
             <input type="text" placeholder="Title" required className="border p-2 rounded col-span-2"
               value={currentProp.title} onChange={e => setCurrentProp({ ...currentProp, title: e.target.value })} />
-            <input type="text" placeholder="Location / County" required className="border p-2 rounded"
+            <input type="text" placeholder="Location / Country" required className="border p-2 rounded"
               value={currentProp.city} onChange={e => {
                 setCurrentProp({ ...currentProp, city: e.target.value });
                 calculateFairRent(e.target.value, currentProp.bhk || 1);

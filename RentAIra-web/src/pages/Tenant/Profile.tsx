@@ -8,7 +8,7 @@ import { Loader } from '../../components/common/UIStates';
 import { Link } from 'react-router-dom';
 import { useLocale } from '../../context/LocaleContext';
 
-const CITY_OPTIONS = ['Bangalore', 'Mumbai', 'Delhi', 'Pune', 'Hyderabad', 'Chennai', 'Kolkata', 'Gurgaon', 'Noida', 'Ahmedabad'];
+const COUNTRY_OPTIONS = ['United States', 'United Kingdom', 'India', 'Canada', 'Australia', 'UAE', 'Singapore'];
 
 const TenantProfile: React.FC = () => {
   const { currentUser } = useAuth();
@@ -84,7 +84,7 @@ const TenantProfile: React.FC = () => {
     }
   };
 
-  const toggleCity = (city: string) => {
+  const toggleCountry = (country: string) => {
     const curr = form.preferredCities ?? [];
     setForm(prev => ({
       ...prev,
@@ -142,7 +142,7 @@ const TenantProfile: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold text-gray-900">{form.name || 'Your Name'}</h1>
             <p className="text-sm text-gray-500 mt-0.5">
-              Tenant · {form.currentCity || 'Location / County not set'} ·{' '}
+              Tenant · {form.currentCity || 'Location / Country not set'} ·{' '}
               <span className={`font-semibold ${
                 form.kycStatus === 'verified' ? 'text-green-600' :
                 form.kycStatus === 'pending' ? 'text-yellow-600' : 'text-gray-400'
@@ -186,7 +186,7 @@ const TenantProfile: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {field('Full Name', input('name', 'text', 'Your full name'))}
           {field('Phone', input('phone', 'text', '+1 234 567 8900'))}
-          {field('Current Location/County', input('currentCity', 'text', 'e.g. Cook County, IL'))}
+          {field('Current Location/Country', input('currentCity', 'text', 'e.g. United States, IL'))}
           {field('Age Range', select('ageRange', [
             { value: '', label: 'Prefer not to say' },
             { value: '18-24', label: '18–24' },
@@ -207,20 +207,20 @@ const TenantProfile: React.FC = () => {
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
         <h2 className="text-lg font-bold text-gray-900 border-b pb-2">Rental Preferences</h2>
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Preferred Locations / Counties</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Preferred Locations / Countries</label>
           <div className="flex flex-wrap gap-2">
-            {CITY_OPTIONS.map(city => (
+            {COUNTRY_OPTIONS.map(country => (
               <button
-                key={city}
+                key={country}
                 type="button"
-                onClick={() => toggleCity(city)}
+                onClick={() => toggleCountry(country)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
                   (form.preferredCities ?? []).includes(city)
                     ? 'bg-[#FF4D5A] text-white border-[#FF4D5A]'
                     : 'bg-white text-gray-600 border-gray-300 hover:border-[#FF4D5A]'
                 }`}
               >
-                {city}
+                {country}
               </button>
             ))}
           </div>
@@ -266,7 +266,7 @@ const TenantProfile: React.FC = () => {
         <h2 className="text-lg font-bold text-gray-900 border-b pb-2">Rental History <span className="text-xs font-normal text-gray-400">(optional)</span></h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {field('Years Renting', input('yearsRenting', 'number', '0'))}
-          {field('Last Rented Location / County', input('lastRentedCity', 'text', 'e.g. Orange County'))}
+          {field('Last Rented Location / Country', input('lastRentedCity', 'text', 'e.g. United States'))}
         </div>
         <div className="flex gap-6">
           {toggle('hasReferences', 'I have rental references')}

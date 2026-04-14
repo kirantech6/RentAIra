@@ -92,7 +92,7 @@ const TenantDashboard: React.FC = () => {
             <div>
               <p className="font-bold text-gray-900">{userProfile?.name || 'Set up your profile'}</p>
               <p className="text-xs text-gray-500">
-                {userProfile?.currentCity ? `📍 ${userProfile.currentCity}` : 'Location / County not set'} ·{' '}
+                {userProfile?.currentCity ? `📍 ${userProfile.currentCity}` : 'Location / Country not set'} ·{' '}
                 Budget {formatCurrency(userProfile?.budgetMin ?? 0)}–{formatCurrency(userProfile?.budgetMax ?? 0)} ·{' '}
                 {userProfile?.desiredBhkMin ?? '?'}–{userProfile?.desiredBhkMax ?? '?'} BHK
               </p>

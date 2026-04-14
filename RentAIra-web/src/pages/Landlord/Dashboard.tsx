@@ -194,7 +194,7 @@ const LandlordDashboard: React.FC = () => {
               )}
             </div>
             <p className="text-xs text-gray-500">
-              📍 {landlordProfile?.primaryCity || 'Location / County not set'} ·{' '}
+              📍 {landlordProfile?.primaryCity || 'Location / Country not set'} ·{' '}
               Completion: <strong>{computeLandlordProfileCompletion(landlordProfile ?? {})}%</strong>
             </p>
             <p className="text-[10px] text-amber-700 bg-amber-50 rounded px-2 py-0.5 mt-1 inline-block">

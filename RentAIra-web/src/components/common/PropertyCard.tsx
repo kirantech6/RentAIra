@@ -94,7 +94,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
 
       <div className="p-5">
         <h3 className="text-lg font-bold text-gray-900 mb-0.5">{property.title}</h3>
-        <p className="text-sm text-gray-500 mb-3">{property.locality}, {property.city} (Location/County)</p>
+        <p className="text-sm text-gray-500 mb-3">{property.locality}, {property.city} (Location/Country)</p>
 
         <div className="flex justify-between items-center mb-4">
           <div>

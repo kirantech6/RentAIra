@@ -3,14 +3,42 @@ import { useParams, Link } from 'react-router-dom';
 import { ChevronRight, ArrowLeft, Rocket, Sparkles, CheckCircle2 } from 'lucide-react';
 import Button from '../components/ui/Button';
 
+const FEATURE_REGISTRY = {
+  'bookkeeping': 'Bookkeeping',
+  'bank-sync': 'Bank Sync',
+  'financial-reports': 'Financial Reports',
+  'quickbooks-integration': 'QuickBooks Integration',
+  'listings-advertising': 'Listings & Advertising',
+  'application-esign': 'Application & eSign',
+  'tenant-screening': 'Tenant Screening',
+  'websites': 'Websites',
+  'crm': 'CRM',
+  'ai-inspections': 'AI Inspections',
+  'maintenance': 'Maintenance',
+  'mobile-app': 'Mobile App',
+  'owner-portal': 'Owner Portal',
+  'file-storage': 'File Storage',
+  'workflows': 'Workflows',
+  'rent-collection': 'Rent Collection',
+  'tenant-management': 'Tenant Management',
+  'renters-insurance': 'Renters Insurance',
+  'communications-tools': 'Communications Tools',
+  'accounting': 'Accounting',
+  'leasing': 'Leasing',
+  'operations': 'Operations',
+  'resident-experience': 'Resident Experience'
+};
+
 const FeaturePage = () => {
   const { category, featureId } = useParams();
 
-  // Convert URL slugs back to readable titles
-  const formatTitle = (slug) => slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  const formatTitle = (slug) => {
+    if (!slug) return '';
+    return slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  };
   
-  const categoryTitle = formatTitle(category);
-  const featureTitle = formatTitle(featureId);
+  const categoryTitle = FEATURE_REGISTRY[category] || formatTitle(category);
+  const featureTitle = FEATURE_REGISTRY[featureId] || formatTitle(featureId);
 
   return (
     <div className="min-h-screen bg-gray-50 pt-8 pb-20">

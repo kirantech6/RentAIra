@@ -140,7 +140,7 @@ const TenantProperties: React.FC = () => {
       <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-8 flex flex-wrap gap-3">
         <input 
           type="text" 
-          placeholder="Filter by Location / County" 
+          placeholder="Filter by Location / Country" 
           className="border p-2 rounded-lg flex-1 min-w-[160px] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF4D5A]"
           value={cityFilter}
           onChange={e => setCityFilter(e.target.value)}

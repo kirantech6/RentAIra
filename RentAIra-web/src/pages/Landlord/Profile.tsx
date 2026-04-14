@@ -8,7 +8,7 @@ import { Loader } from '../../components/common/UIStates';
 import { Link } from 'react-router-dom';
 import { useLocale } from '../../context/LocaleContext';
 
-const CITY_OPTIONS = ['Bangalore', 'Mumbai', 'Delhi', 'Pune', 'Hyderabad', 'Chennai', 'Kolkata', 'Gurgaon', 'Noida', 'Ahmedabad'];
+const COUNTRY_OPTIONS = ['United States', 'United Kingdom', 'India', 'Canada', 'Australia', 'UAE', 'Singapore'];
 
 interface PortfolioStats {
   activePropertiesCount: number;
@@ -121,7 +121,7 @@ const LandlordProfile: React.FC = () => {
     }
   };
 
-  const toggleCity = (city: string) => {
+  const toggleCountry = (country: string) => {
     const curr = form.operatingCities ?? [];
     setForm(prev => ({
       ...prev,
@@ -237,23 +237,23 @@ const LandlordProfile: React.FC = () => {
           {fieldWrap('Full Name', input('name', 'text', 'Full name'))}
           {fieldWrap('Business Name (optional)', input('businessName', 'text', 'e.g. My Properties Ltd'))}
           {fieldWrap('Phone', input('phone', 'text', '+91 98765 43210'))}
-          {fieldWrap('Primary Location/County', input('primaryCity', 'text', 'e.g. California'))}
+          {fieldWrap('Primary Location/Country', input('primaryCity', 'text', 'e.g. California'))}
         </div>
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Operating Locations / Counties</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Operating Locations / Countries</label>
           <div className="flex flex-wrap gap-2">
-            {CITY_OPTIONS.map(city => (
+            {COUNTRY_OPTIONS.map(country => (
               <button
-                key={city}
+                key={country}
                 type="button"
-                onClick={() => toggleCity(city)}
+                onClick={() => toggleCountry(country)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
                   (form.operatingCities ?? []).includes(city)
                     ? 'bg-[#FF4D5A] text-white border-[#FF4D5A]'
                     : 'bg-white text-gray-600 border-gray-300 hover:border-[#FF4D5A]'
                 }`}
               >
-                {city}
+                {country}
               </button>
             ))}
           </div>
